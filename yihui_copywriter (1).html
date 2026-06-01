@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👵 誼慧姥姥．老會計健康精算庫</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --purple: #8e44ad;
+            --purple-dark: #6c3483;
+            --purple-light: #f5eef8;
+            --purple-border: #d7bde2;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --bg: #f9f7fc;
+            --card: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Noto Sans TC', 'PingFang TC', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            padding: 24px 16px 60px;
+            display: flex;
+            justify-content: center;
+        }
+        .page { width: 100%; max-width: 980px; }
+
+        /* 標題 */
+        .header { text-align: center; margin-bottom: 28px; }
+        .header h1 { font-size: 26px; font-weight: 900; color: var(--purple); line-height: 1.4; }
+        .header p { color: var(--text-muted); font-size: 14px; margin-top: 6px; }
+
+        /* 主版型 */
+        .main-layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+        @media (max-width: 820px) { .main-layout { grid-template-columns: 1fr; } }
+
+        /* 左卡 */
+        .left-card {
+            background: var(--card);
+            border-radius: 28px;
+            padding: 26px 22px;
+            box-shadow: 0 4px 24px rgba(142,68,173,0.08);
+            border: 1px solid var(--purple-border);
+        }
+
+        /* API 區 */
+        .api-wrap {
+            background: var(--purple-light);
+            border: 1.5px solid var(--purple-border);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 22px;
+        }
+        .api-label { font-size: 12px; font-weight: 900; color: var(--purple); margin-bottom: 8px; }
+        .api-row { display: flex; gap: 8px; }
+        .api-input {
+            flex: 1; padding: 10px 14px;
+            border: 1.5px solid #d7bde2; border-radius: 10px;
+            font-size: 13px; background: #fff; color: var(--text-main);
+            letter-spacing: 2px; font-family: inherit; transition: all 0.2s;
+        }
+        .api-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(142,68,173,0.1); }
+        .eye-btn {
+            background: #f4f4f4; border: 1.5px solid #d7bde2;
+            border-radius: 10px; padding: 8px 12px;
+            cursor: pointer; font-size: 15px; color: #aaa; transition: all 0.2s;
+        }
+        .eye-btn:hover { border-color: var(--purple); color: var(--purple); }
+        .api-hint { font-size: 11px; color: #aaa; margin-top: 7px; line-height: 1.6; }
+        .api-hint a { color: var(--purple); font-weight: 700; text-decoration: none; }
+
+        /* 模型切換 */
+        .model-row { display: flex; gap: 6px; margin-top: 10px; }
+        .model-btn {
+            flex: 1; padding: 7px 4px; border-radius: 10px;
+            font-size: 11px; font-weight: 700; font-family: inherit;
+            cursor: pointer; border: 1.5px solid #d7bde2;
+            background: #f7f7f7; color: #888; transition: all 0.2s; text-align: center;
+        }
+        .model-btn.active { background: var(--purple-light); border-color: var(--purple); color: var(--purple); }
+        .model-btn:hover:not(.active) { border-color: var(--purple); color: var(--purple); }
+
+        /* 按鈕選單 */
+        .menu-header { font-size: 17px; font-weight: 900; color: var(--text-main); margin-bottom: 14px; }
+        .style-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 26px; }
+        .style-btn {
+            width: 100%; padding: 18px 16px; border-radius: 18px;
+            font-size: 15px; font-weight: 900; font-family: inherit;
+            cursor: pointer; transition: all 0.25s; text-align: center;
+            border: none; line-height: 1.4;
+        }
+        .style-btn.inactive { background: #f4f0f8; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .style-btn.inactive:hover { background: #fff; box-shadow: 0 4px 16px rgba(142,68,173,0.15); color: var(--purple); }
+        .style-btn.active { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: #fff; box-shadow: 0 6px 20px rgba(142,68,173,0.4); transform: translateY(-1px); }
+        .style-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* 工具連結 */
+        .tool-label { font-size: 11px; font-weight: 900; color: #aaa; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .tools-row { display: flex; gap: 8px; margin-bottom: 6px; }
+        .tool-link {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            gap: 5px; padding: 10px 6px; border-radius: 12px;
+            font-size: 12px; font-weight: 800; text-decoration: none; color: #fff; transition: all 0.2s;
+        }
+        .tool-link:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .t-gemini  { background: linear-gradient(135deg,#4285F4,#1a6cf5); }
+        .t-chatgpt { background: linear-gradient(135deg,#10a37f,#0d8c6b); }
+        .t-fb      { background: linear-gradient(135deg,#1877f2,#0a5dc2); }
+        .t-ig      { background: linear-gradient(135deg,#f58529,#dd2a7b); }
+        .t-threads { background: linear-gradient(135deg,#555,#111); }
+        .tools-hint { font-size: 11px; color: #c0c8d8; text-align: center; margin-top: 4px; }
+
+        /* 右區 */
+        .right-area { display: flex; flex-direction: column; gap: 14px; }
+
+        /* 狀態列 */
+        .status-bar {
+            background: var(--purple-light); border: 1.5px solid var(--purple-border);
+            border-radius: 14px; padding: 12px 18px;
+            color: var(--purple); font-weight: 900; font-size: 14px;
+            text-align: center; display: none;
+        }
+        .status-bar.error { background: #fdf2f2; border-color: #f5c6c6; color: #c0392b; }
+        .progress-bar { height: 3px; background: #d7bde2; border-radius: 99px; overflow: hidden; margin-top: 8px; display: none; }
+        .progress-fill { height: 100%; background: var(--purple); border-radius: 99px; width: 0%; transition: width 0.4s ease; }
+
+        /* 輸出欄 */
+        .cols-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        @media (max-width: 820px) { .cols-grid { grid-template-columns: 1fr; } }
+
+        .col {
+            background: #fff; border-radius: 20px; padding: 18px;
+            display: flex; flex-direction: column;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+            min-height: 340px; border: 1px solid #f0eaf5;
+        }
+        .col-fb      { border-top: 5px solid #3b5998; }
+        .col-ig      { border-top: 5px solid #e1306c; }
+        .col-threads { border-top: 5px solid #222; }
+
+        .col-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #f0eaf5; }
+        .col-name { font-weight: 900; font-size: 12px; }
+        .n-fb { color: #3b5998; } .n-ig { color: #e1306c; } .n-threads { color: #222; }
+        .copy-btn {
+            background: #fff; border: 1.5px solid #d7bde2;
+            border-radius: 20px; padding: 4px 12px; font-size: 11px;
+            font-weight: 900; color: #aaa; cursor: pointer; font-family: inherit; transition: all 0.2s;
+        }
+        .copy-btn:hover { background: var(--purple); color: #fff; border-color: var(--purple); }
+        .output-box {
+            flex: 1; background: #faf8fc; border: 1.5px solid #ece6f4;
+            border-radius: 12px; padding: 14px; font-size: 13.5px;
+            line-height: 1.8; white-space: pre-wrap; color: #4a5568;
+            overflow-y: auto; min-height: 260px; transition: all 0.3s;
+        }
+        .output-box.loading { color: #c0b0d0; font-style: italic; }
+        .output-box.done { border-color: #d7bde2; }
+
+        @keyframes cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        .cursor { display: inline-block; width: 2px; height: 1em; background: var(--purple); vertical-align: middle; margin-left: 2px; animation: cursor-blink 0.8s infinite; }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="header">
+        <h1>👵 誼慧姥姥．老會計健康精算庫</h1>
+        <p>💡 姥姥，今天準備用妳的「專業老算盤」幫社群算哪一筆健康帳呢？</p>
+    </div>
+
+    <div class="main-layout">
+        <div class="left-card">
+            <div class="api-wrap">
+                <div class="api-label">🔑 Gemini API Key</div>
+                <div class="api-row">
+                    <input type="password" id="userApiKey" class="api-input" placeholder="貼上你的 API Key...">
+                    <button class="eye-btn" onclick="toggleKey()">👁</button>
+                </div>
+                <div class="model-row">
+                    <button class="model-btn active" id="m-flash" onclick="setModel('gemini-2.5-flash')">2.5 Flash ⚡</button>
+                    <button class="model-btn" id="m-pro" onclick="setModel('gemini-2.5-pro')">2.5 Pro 🧠</button>
+                </div>
+                <div class="api-hint">沒有金鑰？<a href="https://aistudio.google.com/app/apikey" target="_blank">點此免費申請</a>（每天 1,500 次免費）</div>
+            </div>
+
+            <div class="menu-header">🧮 精算選單</div>
+            <div class="style-list">
+                <button class="style-btn inactive" id="btn-1" onclick="generate(1)">🎯 老會計查帳 / 找回健康</button>
+                <button class="style-btn inactive" id="btn-2" onclick="generate(2)">🌸 姥姥私房話 / 告別數羊</button>
+                <button class="style-btn inactive" id="btn-3" onclick="generate(3)">💡 成分大解密 / 科學營養</button>
+                <button class="style-btn inactive" id="btn-4" onclick="generate(4)">🤝 精算第二人生 / 退休創業</button>
+            </div>
+
+            <div class="tool-label">🤖 AI 潤飾工具</div>
+            <div class="tools-row" style="margin-bottom:14px;">
+                <a href="https://gemini.google.com/" target="_blank" class="tool-link t-gemini">✦ Gemini</a>
+                <a href="https://chatgpt.com/" target="_blank" class="tool-link t-chatgpt">⚡ ChatGPT</a>
+            </div>
+            <div class="tool-label">📲 直接發文</div>
+            <div class="tools-row">
+                <a href="https://www.facebook.com/" target="_blank" class="tool-link t-fb">f FB</a>
+                <a href="https://www.instagram.com/" target="_blank" class="tool-link t-ig">📷 IG</a>
+                <a href="https://www.threads.net/" target="_blank" class="tool-link t-threads">@ TH</a>
+            </div>
+            <div class="tools-hint">複製文案 → 點平台 → 貼上發文</div>
+        </div>
+
+        <div class="right-area">
+            <div id="statusBar" class="status-bar">
+                <span id="statusText"></span>
+                <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+            <div class="cols-grid">
+                <div class="col col-fb">
+                    <div class="col-head"><span class="col-name n-fb">FB 大格局長文版</span><button class="copy-btn" onclick="copyCol('out-fb',this)">複製</button></div>
+                    <div id="out-fb" class="output-box">點擊左側按鈕開始生成...</div>
+                </div>
+                <div class="col col-ig">
+                    <div class="col-head"><span class="col-name n-ig">IG 網紅金句版</span><button class="copy-btn" onclick="copyCol('out-ig',this)">複製</button></div>
+                    <div id="out-ig" class="output-box">點擊左側按鈕開始生成...</div>
+                </div>
+                <div class="col col-threads">
+                    <div class="col-head"><span class="col-name n-threads">Threads 硬核短文版</span><button class="copy-btn" onclick="copyCol('out-threads',this)">複製</button></div>
+                    <div id="out-threads" class="output-box">點擊左側按鈕開始生成...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedModel = 'gemini-2.5-flash';
+
+const TOPICS = {
+    1: '老會計查帳 / 找回健康（以「身體資產負債表」為核心比喻，說明現代人忽略健康等於讓身體惡意透支，強調科學草本營養的高投資報酬率）',
+    2: '姥姥私房話 / 告別數羊（分享誼慧姥姥長期失眠、數羊數到崩潰，後來透過草本科學營養調理改善睡眠、恢復活力的親身故事）',
+    3: '成分大解密 / 科學營養（用30年保健食品會計眼光拆解市面保養品的「智商稅」陷阱，推廣細胞層級精準草本營養的正確觀念）',
+    4: '精算第二人生 / 退休創業（介紹 U-LIFE 健康事業系統的低風險、零庫存、異業合作共享客源模式，適合退休或想副業的朋友）'
+};
+
+function toggleKey() {
+    const el = document.getElementById('userApiKey');
+    el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+function setModel(model) {
+    selectedModel = model;
+    document.getElementById('m-flash').classList.toggle('active', model === 'gemini-2.5-flash');
+    document.getElementById('m-pro').classList.toggle('active', model === 'gemini-2.5-pro');
+}
+
+function setStatus(msg, isError) {
+    const bar = document.getElementById('statusBar');
+    bar.style.display = 'block';
+    bar.className = 'status-bar' + (isError ? ' error' : '');
+    document.getElementById('statusText').textContent = msg;
+    document.getElementById('progressBar').style.display = isError ? 'none' : 'block';
+}
+function setProgress(pct) { document.getElementById('progressFill').style.width = pct + '%'; }
+function hideStatus() { document.getElementById('statusBar').style.display = 'none'; }
+function setLoading(id, msg) { const el = document.getElementById(id); el.className = 'output-box loading'; el.textContent = msg; }
+function setDone(id, text) { const el = document.getElementById(id); el.className = 'output-box done'; el.textContent = text; }
+
+function typewriter(id, text, totalMs) {
+    return new Promise(resolve => {
+        const el = document.getElementById(id);
+        el.className = 'output-box done';
+        el.textContent = '';
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        el.appendChild(cursor);
+        let i = 0;
+        const speed = Math.min(10, Math.max(2, Math.floor(totalMs / (text.length || 1))));
+        const timer = setInterval(() => {
+            if (i < text.length) {
+                // 用 textContent + substring 讓 \n 正確渲染為換行
+                el.textContent = text.substring(0, i + 1);
+                el.appendChild(cursor);
+                i++;
+            } else {
+                clearInterval(timer);
+                cursor.remove();
+                resolve();
+            }
+        }, speed);
+    });
+}
+
+async function callGemini(apiKey, prompt) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt + `\n\n[本次生成隨機碼：${Math.random().toString(36).slice(2,8)}]` }] }],
+            generationConfig: { temperature: 2.0, maxOutputTokens: 8192, responseMimeType: 'application/json' }
+        })
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+function buildPrompt(topicId) {
+    return `你是「誼慧姥姥」的專屬社群文案撰寫助理。
+
+【角色背景】
+- 誼慧姥姥在保健食品公司擔任會計30年，退休前後投入 U-LIFE 健康事業系統
+- 個性毒舌但真心，像會計師般嚴謹精算，講話直接、幽默、有底氣
+- 口頭禪風格：用「資產負債表」「折舊」「高投資報酬率」「呆帳」等會計術語比喻健康與人生
+- 核心產品：草本科學精準營養、U-LIFE 健康事業系統
+- 目標受眾：40-60歲女性、職場老兵、想轉型副業或退休創業的朋友
+
+【此次主題】
+${TOPICS[topicId]}
+
+【寫作風格要求】
+- 毒舌但溫暖，不誇大效果，禁止「立即根治」「100%有效」等不實宣稱
+- 用第一人稱「我是誼慧姥姥／姥姥我」開場，帶入個人真實故事或觀察
+- 大量使用會計比喻（折舊率、赤字、精算、呆帳等）
+- 結尾引導互動：「私訊姥姥」「留言查帳」等行動呼籲
+
+請直接將文案填入以下 JSON 格式中：
+{
+  "fb": "FB大格局長文（400-600字，適當換行分段，有開場故事、會計比喻、互動結尾）",
+  "ig": "IG網紅金句版（120-180字，適當換行，有 emoji，5-6個 hashtag）",
+  "threads": "Threads硬核短文（80-120字，毒舌口吻、有個人觀點，1-2個 hashtag）"
+}
+
+只回傳 JSON，不要加任何說明文字或 markdown 標記。`;
+}
+
+async function generate(id) {
+    const apiKey = document.getElementById('userApiKey').value.trim();
+    if (!apiKey) {
+        setStatus('⚠️ 請先填入 Gemini API Key！', true);
+        document.getElementById('userApiKey').focus();
+        return;
+    }
+
+    document.querySelectorAll('.style-btn').forEach(b => { b.classList.remove('active'); b.classList.add('inactive'); b.disabled = true; });
+    document.getElementById('btn-' + id).classList.add('active');
+    document.getElementById('btn-' + id).classList.remove('inactive');
+
+    setStatus('🧮 姥姥正在用老算盤精算文案，請稍候...', false);
+    setProgress(10);
+    setLoading('out-fb', '正在謄寫大格局長文...');
+    setLoading('out-ig', '金句版排版中...');
+    setLoading('out-threads', '硬核短文精煉中...');
+
+    try {
+        setProgress(30);
+        const raw = await callGemini(apiKey, buildPrompt(id));
+        setProgress(75);
+
+        let json;
+        try {
+            json = JSON.parse(raw.trim());
+        } catch (e) {
+            try {
+                let cleanRaw = raw.trim();
+                if (cleanRaw.startsWith('`')) {
+                    cleanRaw = cleanRaw.replace(/^```(?:json)?/, '').replace(/```$/, '').trim();
+                }
+                json = JSON.parse(cleanRaw);
+            } catch (err) {
+                const extract = (text, key) => {
+                    const match = text.match(new RegExp('"' + key + '"\\s*:\\s*"([\\s\\S]*?)"(?=\\s*,|\\s*})'));
+                    return match ? match[1] : '';
+                };
+                json = { fb: extract(raw, 'fb'), ig: extract(raw, 'ig'), threads: extract(raw, 'threads') };
+            }
+        }
+
+        Object.keys(json).forEach(key => {
+            if (json[key]) {
+                json[key] = json[key].replace(/\\n/g, '\n').replace(/\\"/g, '"').trim();
+            }
+        });
+
+        if (!json.fb && !json.ig) throw new Error('格式完全毀損');
+
+        setProgress(90);
+        hideStatus();
+        await typewriter('out-fb', json.fb || '（未生成成功）', 1500);
+        await typewriter('out-ig', json.ig || '（未生成成功）', 800);
+        await typewriter('out-threads', json.threads || '（未生成成功）', 500);
+        setProgress(100);
+
+    } catch (err) {
+        let msg = err.message;
+        if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) msg = 'API Key 無效，請重新確認金鑰';
+        else if (msg.includes('QUOTA_EXCEEDED') || msg.includes('429')) msg = '今日免費額度已用完，明天再試或升級方案';
+        else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) msg = '網路連線失敗，請確認網路後重試';
+        setDone('out-fb', '❌ 生成失敗');
+        setDone('out-ig', '');
+        setDone('out-threads', '');
+        setStatus('❌ ' + msg, true);
+    } finally {
+        document.querySelectorAll('.style-btn').forEach(b => { b.disabled = false; });
+    }
+}
+
+function copyCol(id, btn) {
+    const text = document.getElementById(id).innerText;
+    if (!text || text.startsWith('點擊') || text.startsWith('正在') || text.startsWith('❌') || text.startsWith('⚠️')) return;
+    navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.innerText;
+        btn.innerText = '✓ 已複製';
+        setTimeout(() => btn.innerText = orig, 2000);
+    });
+}
+</script>
+</body>
+</html>
